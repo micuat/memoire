@@ -18,10 +18,12 @@ void testApp::setup(){
 	
 	// set properties for all user masks and point clouds
 	//openNIDevice.setUseMaskPixelsAllUsers(true); // if you just want pixels, use this set to true
-	openNIDevice.setUseMaskTextureAllUsers(true); // this turns on mask pixels internally AND creates mask textures efficiently
-	openNIDevice.setUsePointCloudsAllUsers(true);
-	openNIDevice.setPointCloudDrawSizeAllUsers(2); // size of each 'point' in the point cloud
-	openNIDevice.setPointCloudResolutionAllUsers(2); // resolution of the mesh created for the point cloud eg., this will use every second depth pixel
+	//openNIDevice.setUseMaskTextureAllUsers(true); // this turns on mask pixels internally AND creates mask textures efficiently
+	//openNIDevice.setUsePointCloudsAllUsers(true);
+	//openNIDevice.setPointCloudDrawSizeAllUsers(2); // size of each 'point' in the point cloud
+	//openNIDevice.setPointCloudResolutionAllUsers(2); // resolution of the mesh created for the point cloud eg., this will use every second depth pixel
+	
+	ofAddListener(openNIDevice.userEvent, this, &testApp::userEvent);
 	
     width = 640;
     height = 480;
@@ -49,37 +51,42 @@ void testApp::update(){
 	// get number of current users
 	int numUsers = openNIDevice.getNumTrackedUsers();
 	
+	oldLeftM.resize(numUsers, ofVec2f(-1, -1));
+	oldRightM.resize(numUsers, ofVec2f(-1, -1));
+
 	// iterate through users
 	for (int i = 0; i < numUsers; i++){
 		
 		// get a reference to this user
 		ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
+		if(!user.isTracking() || i > (int)oldLeftM.size() - 1) {
+			continue;
+		}
 		ofPoint m;
 		m = user.getJoint(JOINT_LEFT_HAND).getProjectivePosition();
 		
-		if( i > (int)oldLeftM.size() - 1 ) {
-			oldLeftM.resize(i + 1);
+		ofPoint d;
+		if( oldLeftM.at(i).x < 0 && oldLeftM.at(i).y < 0 ) {
+		} else {
+			d = (m - oldLeftM.at(i))*1.0;
 		}
-		ofPoint d = (m - oldLeftM.at(i))*1.0;
 		oldLeftM.at(i) = m;
 		ofPoint c = ofPoint(640*0.5, 480*0.5) - m;
 		c.normalize();
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.1), 10.0f);
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.01), 20.0f);
-//		fluid.addTemporalForce(m, d, ofFloatColor(0, 0.1, 0.2, 0.01), 30.0f);
 		
 		m = user.getJoint(JOINT_RIGHT_HAND).getProjectivePosition();
 		
-		if( i > (int)oldRightM.size() - 1 ) {
-			oldRightM.resize(i + 1);
+		if( oldRightM.at(i).x < 0 && oldRightM.at(i).y < 0 ) {
+		} else {
+			d = (m - oldRightM.at(i))*1.0;
 		}
-		d = (m - oldRightM.at(i))*1.0;
 		oldRightM.at(i) = m;
 		c = ofPoint(640*0.5, 480*0.5) - m;
 		c.normalize();
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.1), 10.0f);
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.01), 20.0f);
-//		fluid.addTemporalForce(m, d, ofFloatColor(0, 0.2, 0.1, 0.01), 30.0f);
 	}
 	
     //  Update
@@ -91,8 +98,6 @@ void testApp::update(){
 
 //--------------------------------------------------------------
 void testApp::draw(){
-    //ofBackgroundGradient(ofColor::gray, ofColor::black, OF_GRADIENT_LINEAR);
-    
     fluid.draw();
 	
 	syphonServer.publishScreen();
@@ -102,6 +107,15 @@ void testApp::draw(){
 void testApp::userEvent(ofxOpenNIUserEvent & event){
 	// show user event messages in the console
 	ofLogNotice() << getUserStatusAsString(event.userStatus) << "for user" << event.id << "from device" << event.deviceID;
+	
+	if( event.id > (int)oldLeftM.size() - 1 ) {
+		oldLeftM.resize(event.id + 1, ofVec2f(-1, -1));
+		oldRightM.resize(event.id + 1, ofVec2f(-1, -1));
+	}
+	for( int i = 0; i < oldLeftM.size(); i++ ) {
+		oldLeftM.at(i) = ofVec2f(-1, -1);
+		oldRightM.at(i) = ofVec2f(-1, -1);
+	}
 }
 
 //--------------------------------------------------------------
