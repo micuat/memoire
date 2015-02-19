@@ -4,7 +4,25 @@
 void testApp::setup(){
     ofEnableAlphaBlending();
     ofSetCircleResolution(100);
-    
+	
+	ofSetLogLevel(OF_LOG_VERBOSE);
+	
+	openNIDevice.setup();
+	openNIDevice.addImageGenerator();
+	openNIDevice.addDepthGenerator();
+	openNIDevice.setRegister(true);
+	openNIDevice.setMirror(true);
+	openNIDevice.addUserGenerator();
+	openNIDevice.setMaxNumUsers(2);
+	openNIDevice.start();
+	
+	// set properties for all user masks and point clouds
+	//openNIDevice.setUseMaskPixelsAllUsers(true); // if you just want pixels, use this set to true
+	openNIDevice.setUseMaskTextureAllUsers(true); // this turns on mask pixels internally AND creates mask textures efficiently
+	openNIDevice.setUsePointCloudsAllUsers(true);
+	openNIDevice.setPointCloudDrawSizeAllUsers(2); // size of each 'point' in the point cloud
+	openNIDevice.setPointCloudResolutionAllUsers(2); // resolution of the mesh created for the point cloud eg., this will use every second depth pixel
+	
     width = 640;
     height = 480;
 
@@ -26,20 +44,26 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-    
-	//fluid.addColor(backImage);
+	openNIDevice.update();
 	
-    // Adding temporal Force
-    //
-    ofPoint m = ofPoint(mouseX,mouseY);
-    ofPoint d = (m - oldM)*1.0;
-    oldM = m;
-    ofPoint c = ofPoint(640*0.5, 480*0.5) - m;
-    c.normalize();
-	fluid.addTemporalForce(m, d, ofFloatColor(0, 0.1, 0.2, 0.2), 10.0f);
-	fluid.addTemporalForce(m, d, ofFloatColor(0, 0.1, 0.2, 0.05), 20.0f);
-	fluid.addTemporalForce(m, d, ofFloatColor(0, 0.1, 0.2, 0.01), 30.0f);
-
+	// get number of current users
+	int numUsers = openNIDevice.getNumTrackedUsers();
+	
+	// iterate through users
+	for (int i = 0; i < numUsers; i++){
+		
+		// get a reference to this user
+		ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
+		ofPoint m = user.getJoint(JOINT_RIGHT_HAND).getProjectivePosition();
+		ofPoint d = (m - oldM)*1.0;
+		oldM = m;
+		ofPoint c = ofPoint(640*0.5, 480*0.5) - m;
+		c.normalize();
+		fluid.addTemporalForce(m, d, ofFloatColor(0, 0.1, 0.2, 0.2), 10.0f);
+		fluid.addTemporalForce(m, d, ofFloatColor(0, 0.1, 0.2, 0.05), 20.0f);
+		fluid.addTemporalForce(m, d, ofFloatColor(0, 0.1, 0.2, 0.01), 30.0f);
+	}
+	
     //  Update
     //
     fluid.update();
@@ -54,6 +78,17 @@ void testApp::draw(){
     fluid.draw();
 	
 	syphonServer.publishScreen();
+}
+
+//--------------------------------------------------------------
+void testApp::userEvent(ofxOpenNIUserEvent & event){
+	// show user event messages in the console
+	ofLogNotice() << getUserStatusAsString(event.userStatus) << "for user" << event.id << "from device" << event.deviceID;
+}
+
+//--------------------------------------------------------------
+void testApp::exit(){
+	openNIDevice.stop();
 }
 
 //--------------------------------------------------------------
