@@ -30,9 +30,8 @@ public:
 	
     ofxFluid fluid;
     
-    ofVec2f oldM;
-    int     width,height;
-    bool    bPaint, bObstacle, bBounding, bClear;
+    vector<ofVec2f> oldLeftM, oldRightM;
+    int     width, height;
 	
 	ofImage backImage;
 	

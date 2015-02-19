@@ -54,14 +54,32 @@ void testApp::update(){
 		
 		// get a reference to this user
 		ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
-		ofPoint m = user.getJoint(JOINT_RIGHT_HAND).getProjectivePosition();
-		ofPoint d = (m - oldM)*1.0;
-		oldM = m;
+		ofPoint m;
+		m = user.getJoint(JOINT_LEFT_HAND).getProjectivePosition();
+		
+		if( i > (int)oldLeftM.size() - 1 ) {
+			oldLeftM.resize(i + 1);
+		}
+		ofPoint d = (m - oldLeftM.at(i))*1.0;
+		oldLeftM.at(i) = m;
 		ofPoint c = ofPoint(640*0.5, 480*0.5) - m;
 		c.normalize();
-		fluid.addTemporalForce(m, d, ofFloatColor(0, 0.1, 0.2, 0.2), 10.0f);
-		fluid.addTemporalForce(m, d, ofFloatColor(0, 0.1, 0.2, 0.05), 20.0f);
-		fluid.addTemporalForce(m, d, ofFloatColor(0, 0.1, 0.2, 0.01), 30.0f);
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.1), 10.0f);
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.01), 20.0f);
+//		fluid.addTemporalForce(m, d, ofFloatColor(0, 0.1, 0.2, 0.01), 30.0f);
+		
+		m = user.getJoint(JOINT_RIGHT_HAND).getProjectivePosition();
+		
+		if( i > (int)oldRightM.size() - 1 ) {
+			oldRightM.resize(i + 1);
+		}
+		d = (m - oldRightM.at(i))*1.0;
+		oldRightM.at(i) = m;
+		c = ofPoint(640*0.5, 480*0.5) - m;
+		c.normalize();
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.1), 10.0f);
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.01), 20.0f);
+//		fluid.addTemporalForce(m, d, ofFloatColor(0, 0.2, 0.1, 0.01), 30.0f);
 	}
 	
     //  Update
