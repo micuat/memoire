@@ -30,4 +30,6 @@ public:
     bool    bPaint, bObstacle, bBounding, bClear;
 	
 	ofImage backImage;
+	
+	ofxSyphonServer syphonServer;
 };

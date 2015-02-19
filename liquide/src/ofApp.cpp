@@ -18,26 +18,10 @@ void testApp::setup(){
     fluid.velocityDissipation = 1;
     
     fluid.setGravity(ofVec2f(0.0,0.0));
-//    fluid.setGravity(ofVec2f(0.0,0.0098));
-    
-    //  Set obstacle
-    //
-    fluid.begin();
-    ofSetColor(0,0);
-    ofSetColor(255);
-    ofCircle(width*0.5, height*0.35, 40);
-    fluid.end();
-    fluid.setUseObstacles(false);
-    
-    // Adding constant forces
-    //
-//	fluid.addTemporalForce(ofPoint(width*0.5,height*0.85), ofPoint(0,-2), ofFloatColor(0.5,0.1,0.0), 10.f);
-//	fluid.addTemporalForce(ofPoint(width*0.5,height*0.15), ofPoint(0,2), ofFloatColor(0.5,0.1,0.0), 10.f);
-//	
-	backImage.loadImage(ofToDataPath("ml.jpg"));
-	//fluid.addColor(backImage);
 	
     ofSetWindowShape(width, height);
+	
+	syphonServer.setName("Screen Output");
 }
 
 //--------------------------------------------------------------
@@ -68,18 +52,13 @@ void testApp::draw(){
     //ofBackgroundGradient(ofColor::gray, ofColor::black, OF_GRADIENT_LINEAR);
     
     fluid.draw();
+	
+	syphonServer.publishScreen();
 }
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-    if( key == 'p')
-        bPaint = !bPaint;
-    if( key == 'o')
-        bObstacle = !bObstacle;
-    if( key == 'b')
-        bBounding = !bBounding;
-    if( key == 'c')
-        bClear = !bClear;
+
 }
 
 //--------------------------------------------------------------
