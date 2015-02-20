@@ -42,6 +42,8 @@ void testApp::setup(){
     ofSetWindowShape(width, height);
 	
 	syphonServer.setName("Screen Output");
+	
+	oscSender.setup(HOST, PORT);
 }
 
 //--------------------------------------------------------------
@@ -69,24 +71,43 @@ void testApp::update(){
 		if( oldLeftM.at(i).x < 0 && oldLeftM.at(i).y < 0 ) {
 		} else {
 			d = (m - oldLeftM.at(i))*1.0;
+			d.z = 0;
 		}
 		oldLeftM.at(i) = m;
-		ofPoint c = ofPoint(640*0.5, 480*0.5) - m;
-		c.normalize();
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.1), 10.0f);
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.01), 20.0f);
+		
+		ofxOscMessage message;
+		float th = 5*5;
+		if(ofGetFrameNum() % 4 == 1 && d.lengthSquared() > th) {
+			message.setAddress("/niw/client/aggregator/floorcontact");
+			message.addStringArg("add");
+			message.addIntArg(ofGetFrameNum());
+			message.addFloatArg(ofMap(m.x, 0, width, 0, 6));
+			message.addFloatArg(ofMap(m.y, 0, height, 6, 0));
+			oscSender.sendMessage(message);
+		}
+		message.clear();
 		
 		m = user.getJoint(JOINT_RIGHT_HAND).getProjectivePosition();
 		
 		if( oldRightM.at(i).x < 0 && oldRightM.at(i).y < 0 ) {
 		} else {
 			d = (m - oldRightM.at(i))*1.0;
+			d.z = 0;
 		}
 		oldRightM.at(i) = m;
-		c = ofPoint(640*0.5, 480*0.5) - m;
-		c.normalize();
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.1), 10.0f);
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.01), 20.0f);
+		
+		if(ofGetFrameNum() % 4 == 3 && d.lengthSquared() > th) {
+			message.setAddress("/niw/client/aggregator/floorcontact");
+			message.addStringArg("add");
+			message.addIntArg(ofGetFrameNum());
+			message.addFloatArg(ofMap(m.x, 0, width, 0, 6));
+			message.addFloatArg(ofMap(m.y, 0, height, 6, 0));
+			oscSender.sendMessage(message);
+		}
 	}
 	
     //  Update

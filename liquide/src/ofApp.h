@@ -7,6 +7,9 @@
 #include "ofxOsc.h"
 #include "ofxSyphon.h"
 
+#define HOST "localhost"
+#define PORT 14923
+
 class testApp : public ofBaseApp{
 public:
     void setup();
@@ -36,4 +39,6 @@ public:
 	ofImage backImage;
 	
 	ofxSyphonServer syphonServer;
+	
+	ofxOscSender oscSender;
 };
