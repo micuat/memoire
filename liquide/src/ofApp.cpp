@@ -74,8 +74,8 @@ void testApp::update(){
 	// get number of current users
 	int numUsers = openNIDevice.getNumTrackedUsers();
 	
-	oldLeftM.resize(numUsers, ofVec2f(-1, -1));
-	oldRightM.resize(numUsers, ofVec2f(-1, -1));
+	oldLeftM.resize(numUsers);
+	oldRightM.resize(numUsers);
 	dieCounts.resize(numUsers, 0);
 	
 	// iterate through users
@@ -86,8 +86,6 @@ void testApp::update(){
 		user.setForceResetTimeout(200);
 		
 		if(user.isCalibrating()) {
-			oldLeftM.at(i) = ofVec2f(-1, -1);
-			oldRightM.at(i) = ofVec2f(-1, -1);
 			continue;
 		}
 		
@@ -95,18 +93,15 @@ void testApp::update(){
 			continue;
 		}
 		
-		ofPoint m;
+		ofVec2f m;
 		m = user.getJoint(JOINT_LEFT_HAND).getProjectivePosition();
 		
-		ofPoint d;
-		if( oldLeftM.at(i).x < 0 && oldLeftM.at(i).y < 0 ) {
-		} else {
-			d = (m - oldLeftM.at(i))*1.0;
-			d.z = 0;
-		}
+		ofVec2f d;
+		d = (m - oldLeftM.at(i))*1.0;
+		
 		oldLeftM.at(i) = m;
-		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.1), 5.0f * blobSize);
-		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.01), 10.0f * blobSize);
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2), 5.0f * blobSize);
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2), 10.0f * blobSize);
 		
 		ofxOscMessage message;
 		float th = 5*5;
@@ -122,14 +117,11 @@ void testApp::update(){
 		
 		m = user.getJoint(JOINT_RIGHT_HAND).getProjectivePosition();
 		
-		if( oldRightM.at(i).x < 0 && oldRightM.at(i).y < 0 ) {
-		} else {
-			d = (m - oldRightM.at(i))*1.0;
-			d.z = 0;
-		}
+		d = (m - oldRightM.at(i))*1.0;
+		
 		oldRightM.at(i) = m;
-		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.1), 5.0f * blobSize);
-		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.01), 10.0f * blobSize);
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1), 5.0f * blobSize);
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1), 10.0f * blobSize);
 		
 		if(ofGetFrameNum() % 4 == 3 && d.lengthSquared() > th) {
 			message.setAddress("/niw/client/aggregator/floorcontact");
@@ -196,15 +188,6 @@ void testApp::draw(){
 void testApp::userEvent(ofxOpenNIUserEvent & event){
 	// show user event messages in the console
 	ofLogNotice() << getUserStatusAsString(event.userStatus) << "for user" << event.id << "from device" << event.deviceID;
-	
-	if( event.id > (int)oldLeftM.size() - 1 ) {
-		oldLeftM.resize(event.id + 1, ofVec2f(-1, -1));
-		oldRightM.resize(event.id + 1, ofVec2f(-1, -1));
-	}
-	for( int i = 0; i < oldLeftM.size(); i++ ) {
-		oldLeftM.at(i) = ofVec2f(-1, -1);
-		oldRightM.at(i) = ofVec2f(-1, -1);
-	}
 }
 
 //--------------------------------------------------------------
