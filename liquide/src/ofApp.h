@@ -6,6 +6,7 @@
 #include "ofxOpenNI.h"
 #include "ofxOsc.h"
 #include "ofxSyphon.h"
+#include "ofxGui.h"
 
 #define HOST "localhost"
 #define PORT 14923
@@ -42,5 +43,8 @@ public:
 	
 	ofxOscSender oscSender;
 	
-	bool clearUsers;
+	ofxToggle clearUsers;
+	ofxLabel label;
+	
+	ofxPanel gui;
 };

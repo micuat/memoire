@@ -44,6 +44,11 @@ void testApp::setup(){
 	syphonServer.setName("Screen Output");
 	
 	oscSender.setup(HOST, PORT);
+	
+	gui.setup();
+	gui.add(clearUsers.setup("Clear Users", false));
+	gui.add(label.setup("Debug", ""));
+	gui.setSize(400, gui.getHeight());
 }
 
 //--------------------------------------------------------------
@@ -129,8 +134,6 @@ void testApp::update(){
     //  Update
     //
     fluid.update();
-    
-    ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
 
 //--------------------------------------------------------------
@@ -139,13 +142,15 @@ void testApp::draw(){
 	
 	syphonServer.publishScreen();
 	
+	int numUsers = openNIDevice.getNumTrackedUsers();
+	
 	if(!openNIDevice.isDepthOn()) {
-		ofBackground(255, 0, 0);
-		return;
+		label = "Kinect not running";
+	} else {
+		label = "Kinect running with " + ofToString(numUsers) + " users at " + ofToString(ofGetFrameRate()) + " fps";
 	}
 	
 	// debug
-	int numUsers = openNIDevice.getNumTrackedUsers();
 	for (int i = 0; i < numUsers; i++){
 		
 		// get a reference to this user
@@ -154,7 +159,8 @@ void testApp::draw(){
 		// draw the mask texture for this user
 		user.drawSkeleton();
 	}
-
+	
+	gui.draw();
 }
 
 //--------------------------------------------------------------
@@ -179,9 +185,7 @@ void testApp::exit(){
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-	if(key == ' ') {
-		clearUsers = true;
-	}
+
 }
 
 //--------------------------------------------------------------
