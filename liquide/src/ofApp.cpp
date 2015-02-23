@@ -61,9 +61,18 @@ void testApp::update(){
 		
 		// get a reference to this user
 		ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
+		user.setForceResetTimeout(200);
+		
+		if(user.isCalibrating()) {
+			oldLeftM.at(i) = ofVec2f(-1, -1);
+			oldRightM.at(i) = ofVec2f(-1, -1);
+			continue;
+		}
+		
 		if(!user.isTracking() || i > (int)oldLeftM.size() - 1) {
 			continue;
 		}
+		
 		ofPoint m;
 		m = user.getJoint(JOINT_LEFT_HAND).getProjectivePosition();
 		
@@ -122,6 +131,23 @@ void testApp::draw(){
     fluid.draw();
 	
 	syphonServer.publishScreen();
+	
+	if(!openNIDevice.isDepthOn()) {
+		ofBackground(255, 0, 0);
+		return;
+	}
+	
+	// debug
+	int numUsers = openNIDevice.getNumTrackedUsers();
+	for (int i = 0; i < numUsers; i++){
+		
+		// get a reference to this user
+		ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
+		
+		// draw the mask texture for this user
+		user.drawSkeleton();
+	}
+
 }
 
 //--------------------------------------------------------------
