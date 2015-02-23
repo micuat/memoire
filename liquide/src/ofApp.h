@@ -41,4 +41,6 @@ public:
 	ofxSyphonServer syphonServer;
 	
 	ofxOscSender oscSender;
+	
+	bool clearUsers;
 };

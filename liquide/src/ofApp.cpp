@@ -63,6 +63,11 @@ void testApp::update(){
 		ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
 		user.setForceResetTimeout(200);
 		
+		if(clearUsers) {
+			user.setForceReset(false, true);
+			continue;
+		}
+		
 		if(user.isCalibrating()) {
 			oldLeftM.at(i) = ofVec2f(-1, -1);
 			oldRightM.at(i) = ofVec2f(-1, -1);
@@ -119,6 +124,8 @@ void testApp::update(){
 		}
 	}
 	
+	clearUsers = false;
+	
     //  Update
     //
     fluid.update();
@@ -172,7 +179,9 @@ void testApp::exit(){
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-
+	if(key == ' ') {
+		clearUsers = true;
+	}
 }
 
 //--------------------------------------------------------------
