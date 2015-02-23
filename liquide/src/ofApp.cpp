@@ -35,7 +35,7 @@ void testApp::setup(){
     // Seting the gravity set up & injecting the background image
     //
 	fluid.dissipation = 0.95;
-    fluid.velocityDissipation = 1;
+    fluid.velocityDissipation = 0.99;
     
     fluid.setGravity(ofVec2f(0.0,0.0));
 	
@@ -48,7 +48,7 @@ void testApp::setup(){
 	gui.setup();
 	gui.add(label.setup("", ""));
 	gui.add(disappearRate.setup("Disappear Rate", 0.95f, 0.9f, 1));
-	gui.add(inertiaRate.setup("Inertia Rate", 1, 0.9f, 1));
+	gui.add(inertiaRate.setup("Inertia Rate", 0.99, 0.8f, 1));
 	gui.add(blobSize.setup("Blob Size", 2, 1, 4));
 	gui.add(clearUsers.setup("Clear Users", false));
 //	gui.setSize(400, 240);
@@ -69,6 +69,11 @@ void testApp::update(){
 		openNIDevice.setPaused(false);
 		openNIDevice.startThread();
 		clearUsers = false;
+		
+		oldLeftM.clear();
+		oldRightM.clear();
+		
+		fluid.clear();
 	}
 	
 	// get number of current users
@@ -141,7 +146,11 @@ void testApp::update(){
 				openNIDevice.setPaused(false);
 				openNIDevice.startThread();
 				
-				dieCounts.resize(0);
+				dieCounts.clear();
+				oldLeftM.clear();
+				oldRightM.clear();
+				
+				fluid.clear();
 				return;
 			}
 		} else {
