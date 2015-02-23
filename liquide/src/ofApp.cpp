@@ -13,7 +13,7 @@ void testApp::setup(){
 	openNIDevice.setRegister(true);
 	openNIDevice.setMirror(true);
 	openNIDevice.addUserGenerator();
-	openNIDevice.setMaxNumUsers(2);
+	openNIDevice.setMaxNumUsers(10);
 	openNIDevice.start();
 	
 	// set properties for all user masks and point clouds
@@ -139,7 +139,7 @@ void testApp::update(){
 			message.addFloatArg(ofMap(m.y, 0, height, 6, 0));
 			oscSender.sendMessage(message);
 		}
-		if(d.length() == 0 && !user.isCalibrating()) {
+		if(d.length() == 0 && !user.isCalibrating() && numUsers == openNIDevice.getMaxNumUsers()) {
 			dieCounts.at(i)++;
 			if(dieCounts.at(i) > 10) {
 				openNIDevice.waitForThread(true);
