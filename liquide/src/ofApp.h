@@ -45,6 +45,11 @@ public:
 	
 	ofxToggle clearUsers;
 	ofxLabel label;
+	ofxFloatSlider disappearRate;
+	ofxFloatSlider inertiaRate;
+	ofxFloatSlider blobSize;
 	
 	ofxPanel gui;
+	
+	vector<int> dieCounts;
 };

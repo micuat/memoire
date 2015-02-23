@@ -34,7 +34,7 @@ void testApp::setup(){
     
     // Seting the gravity set up & injecting the background image
     //
-    fluid.dissipation = 0.95;
+	fluid.dissipation = 0.95;
     fluid.velocityDissipation = 1;
     
     fluid.setGravity(ofVec2f(0.0,0.0));
@@ -46,32 +46,44 @@ void testApp::setup(){
 	oscSender.setup(HOST, PORT);
 	
 	gui.setup();
+	gui.add(label.setup("", ""));
+	gui.add(disappearRate.setup("Disappear Rate", 0.95f, 0.9f, 1));
+	gui.add(inertiaRate.setup("Inertia Rate", 1, 0.9f, 1));
+	gui.add(blobSize.setup("Blob Size", 2, 1, 4));
 	gui.add(clearUsers.setup("Clear Users", false));
-	gui.add(label.setup("Debug", ""));
-	gui.setSize(400, gui.getHeight());
+//	gui.setSize(400, 240);
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
 	openNIDevice.update();
 	
+	fluid.dissipation = disappearRate;
+	fluid.velocityDissipation = inertiaRate;
+
+	if(clearUsers) {
+		openNIDevice.waitForThread(true);
+		openNIDevice.setPaused(true);
+		openNIDevice.removeUserGenerator();
+		openNIDevice.addUserGenerator();
+		openNIDevice.setPaused(false);
+		openNIDevice.startThread();
+		clearUsers = false;
+	}
+	
 	// get number of current users
 	int numUsers = openNIDevice.getNumTrackedUsers();
 	
 	oldLeftM.resize(numUsers, ofVec2f(-1, -1));
 	oldRightM.resize(numUsers, ofVec2f(-1, -1));
-
+	dieCounts.resize(numUsers, 0);
+	
 	// iterate through users
 	for (int i = 0; i < numUsers; i++){
 		
 		// get a reference to this user
 		ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
 		user.setForceResetTimeout(200);
-		
-		if(clearUsers) {
-			user.setForceReset(false, true);
-			continue;
-		}
 		
 		if(user.isCalibrating()) {
 			oldLeftM.at(i) = ofVec2f(-1, -1);
@@ -93,8 +105,8 @@ void testApp::update(){
 			d.z = 0;
 		}
 		oldLeftM.at(i) = m;
-		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.1), 10.0f);
-		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.01), 20.0f);
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.1), 5.0f * blobSize);
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2, 0.01), 10.0f * blobSize);
 		
 		ofxOscMessage message;
 		float th = 5*5;
@@ -116,8 +128,8 @@ void testApp::update(){
 			d.z = 0;
 		}
 		oldRightM.at(i) = m;
-		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.1), 10.0f);
-		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.01), 20.0f);
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.1), 5.0f * blobSize);
+		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1, 0.01), 10.0f * blobSize);
 		
 		if(ofGetFrameNum() % 4 == 3 && d.lengthSquared() > th) {
 			message.setAddress("/niw/client/aggregator/floorcontact");
@@ -127,9 +139,23 @@ void testApp::update(){
 			message.addFloatArg(ofMap(m.y, 0, height, 6, 0));
 			oscSender.sendMessage(message);
 		}
+		if(d.length() == 0 && !user.isCalibrating()) {
+			dieCounts.at(i)++;
+			if(dieCounts.at(i) > 10) {
+				openNIDevice.waitForThread(true);
+				openNIDevice.setPaused(true);
+				openNIDevice.removeUserGenerator();
+				openNIDevice.addUserGenerator();
+				openNIDevice.setPaused(false);
+				openNIDevice.startThread();
+				
+				dieCounts.resize(0);
+				return;
+			}
+		} else {
+			dieCounts.at(i) = 0;
+		}
 	}
-	
-	clearUsers = false;
 	
     //  Update
     //
@@ -138,6 +164,8 @@ void testApp::update(){
 
 //--------------------------------------------------------------
 void testApp::draw(){
+	ofDisableAlphaBlending();
+	
     fluid.draw();
 	
 	syphonServer.publishScreen();
@@ -147,7 +175,7 @@ void testApp::draw(){
 	if(!openNIDevice.isDepthOn()) {
 		label = "Kinect not running";
 	} else {
-		label = "Kinect running with " + ofToString(numUsers) + " users at " + ofToString(ofGetFrameRate()) + " fps";
+		label = ofToString(numUsers) + " users at " + ofToString(ofGetFrameRate(), 5) + " fps";
 	}
 	
 	// debug
@@ -160,6 +188,7 @@ void testApp::draw(){
 		user.drawSkeleton();
 	}
 	
+	ofSetColor(255);
 	gui.draw();
 }
 
