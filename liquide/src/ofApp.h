@@ -8,13 +8,18 @@
 #include "ofxSyphon.h"
 #include "ofxGui.h"
 
-#define HOST "localhost"
-#define PORT 14923
+#define HOST_UNITY "localhost"
+#define PORT_UNITY 14923
+
+#define HOST_OF "localhost"
+#define PORT_OF 14933
 
 class testApp : public ofBaseApp{
 public:
     void setup();
-    void update();
+	void update();
+	void updateClient();
+	void updateServer();
     void draw();
 	void exit();
 	
@@ -27,6 +32,7 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
+	bool isClient();
 	
 	void userEvent(ofxOpenNIUserEvent & event);
 	
@@ -41,7 +47,8 @@ public:
 	
 	ofxSyphonServer syphonServer;
 	
-	ofxOscSender oscSender;
+	ofxOscSender oscSenderUnity, oscSenderOf;
+	ofPtr<ofxOscReceiver> oscReceiverOf;
 	
 	ofxToggle clearUsers;
 	ofxLabel label;

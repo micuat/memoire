@@ -43,7 +43,8 @@ void testApp::setup(){
 	
 	syphonServer.setName("Screen Output");
 	
-	oscSender.setup(HOST, PORT);
+	oscSenderUnity.setup(HOST_UNITY, PORT_UNITY);
+	oscSenderOf.setup(HOST_OF, PORT_OF);
 	
 	gui.setup();
 	gui.add(label.setup("", ""));
@@ -56,11 +57,25 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-	openNIDevice.update();
-	
 	fluid.dissipation = disappearRate;
 	fluid.velocityDissipation = inertiaRate;
+	
+	if( isClient() ) {
+		updateClient();
+	} else {
+		// server with Kinect
+		updateServer();
+	}
+	
+    //  Update
+    //
+    fluid.update();
+}
 
+//--------------------------------------------------------------
+void testApp::updateServer(){
+	openNIDevice.update();
+	
 	if(clearUsers) {
 		openNIDevice.waitForThread(true);
 		openNIDevice.setPaused(true);
@@ -111,13 +126,27 @@ void testApp::update(){
 		ofxOscMessage message;
 		float th = 5*5;
 		if(ofGetFrameNum() % 4 == 1 && d.lengthSquared() > th) {
+			// for Unity integration
 			message.setAddress("/niw/client/aggregator/floorcontact");
 			message.addStringArg("add");
 			message.addIntArg(ofGetFrameNum());
 			message.addFloatArg(ofMap(m.x, 0, width, 0, 6));
 			message.addFloatArg(ofMap(m.y, 0, height, 6, 0));
-			oscSender.sendMessage(message);
+			oscSenderUnity.sendMessage(message);
 		}
+		message.clear();
+		
+		// to client
+		ofPoint p;
+		p = user.getJoint(JOINT_LEFT_HAND).getWorldPosition();
+		message.setAddress("/memoire/liquide/left");
+		message.addIntArg(i);
+		message.addFloatArg(p.x);
+		message.addFloatArg(p.y);
+		message.addFloatArg(d.x);
+		message.addFloatArg(d.y);
+		message.addIntArg(ofGetFrameNum());
+		oscSenderOf.sendMessage(message);
 		message.clear();
 		
 		m = user.getJoint(JOINT_RIGHT_HAND).getProjectivePosition();
@@ -129,13 +158,28 @@ void testApp::update(){
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1), 10.0f * blobSize);
 		
 		if(ofGetFrameNum() % 4 == 3 && d.lengthSquared() > th) {
+			// for Unity integration
 			message.setAddress("/niw/client/aggregator/floorcontact");
 			message.addStringArg("add");
 			message.addIntArg(ofGetFrameNum());
 			message.addFloatArg(ofMap(m.x, 0, width, 0, 6));
 			message.addFloatArg(ofMap(m.y, 0, height, 6, 0));
-			oscSender.sendMessage(message);
+			oscSenderUnity.sendMessage(message);
 		}
+		message.clear();
+		
+		// to client
+		p = user.getJoint(JOINT_RIGHT_HAND).getWorldPosition();
+		message.setAddress("/memoire/liquide/right");
+		message.addIntArg(i);
+		message.addFloatArg(p.x);
+		message.addFloatArg(p.y);
+		message.addFloatArg(d.x);
+		message.addFloatArg(d.y);
+		message.addIntArg(ofGetFrameNum());
+		oscSenderOf.sendMessage(message);
+		message.clear();
+		
 		if(d.length() == 0 && !user.isCalibrating() && numUsers == openNIDevice.getMaxNumUsers()) {
 			dieCounts.at(i)++;
 			if(dieCounts.at(i) > 10) {
@@ -157,10 +201,49 @@ void testApp::update(){
 			dieCounts.at(i) = 0;
 		}
 	}
+}
+
+//--------------------------------------------------------------
+void testApp::updateClient(){
+	if(oscReceiverOf == NULL) {
+		oscReceiverOf = ofPtr<ofxOscReceiver>(new ofxOscReceiver);
+		oscReceiverOf->setup(PORT_OF);
+	}
 	
-    //  Update
-    //
-    fluid.update();
+	while(oscReceiverOf->hasWaitingMessages()){
+		// get the next message
+		ofxOscMessage m;
+		oscReceiverOf->getNextMessage(&m);
+		
+		// check for mouse moved message
+		if(m.getAddress() == "/memoire/liquide/left"){
+			ofVec2f p, d;
+			p.x = m.getArgAsFloat(1);
+			p.y = m.getArgAsFloat(2);
+			d.x = m.getArgAsFloat(3);
+			d.y = m.getArgAsFloat(4);
+			fluid.addTemporalForce(p, d, ofFloatColor(0.05, 0.1, 0.2), 5.0f * blobSize);
+			fluid.addTemporalForce(p, d, ofFloatColor(0.05, 0.1, 0.2), 10.0f * blobSize);
+		}
+		else if(m.getAddress() == "/memoire/liquide/right"){
+			ofVec2f p, d;
+			p.x = m.getArgAsFloat(1);
+			p.y = m.getArgAsFloat(2);
+			d.x = m.getArgAsFloat(3);
+			d.y = m.getArgAsFloat(4);
+			fluid.addTemporalForce(p, d, ofFloatColor(0.05, 0.1, 0.1), 5.0f * blobSize);
+			fluid.addTemporalForce(p, d, ofFloatColor(0.05, 0.1, 0.1), 10.0f * blobSize);
+		}
+	}
+	
+	if(clearUsers) {
+		clearUsers = false;
+		
+		oldLeftM.clear();
+		oldRightM.clear();
+		
+		fluid.clear();
+	}
 }
 
 //--------------------------------------------------------------
@@ -247,4 +330,8 @@ void testApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void testApp::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+bool testApp::isClient() {
+	return !openNIDevice.isDepthOn();
 }
