@@ -62,4 +62,6 @@ public:
 	
 	cv::Mat proMatrix;
 	bool isMapping;
+	
+	float proWidth, proHeight;
 };

@@ -60,6 +60,10 @@ void testApp::setup(){
 		cfs["proExtrinsic"] >> proExtrinsic;
 		proMatrix = proIntrinsic * proExtrinsic;
 		
+		cv::FileStorage fs(ofToDataPath("config.yml"), cv::FileStorage::READ);
+		fs["proWidth"] >> proWidth;
+		fs["proHeight"] >> proHeight;
+		
 		isMapping = true;
 	} else {
 		isMapping = false;
@@ -160,13 +164,14 @@ void testApp::updateServer(){
 		if( isMapping ) {
 			ofPoint p;
 			p = user.getJoint(JOINT_LEFT_HAND).getWorldPosition();
+			p.y = -p.y;
 			cv::Mat pcv;
 			pcv = (cv::Mat1d(4, 1) << p.x, p.y, p.z, 1);
 			pcv = proMatrix * pcv;
 			pcv *= 1.0 / pcv.at<double>(2, 0);
 			
-			m.x = pcv.at<double>(0, 0);
-			m.y = pcv.at<double>(1, 0);
+			m.x = ofMap(pcv.at<double>(0, 0), 0, proWidth, 0, width);
+			m.y = ofMap(pcv.at<double>(1, 0), 0, proHeight, 0, height);
 			d.x = -d.x;
 		}
 		
@@ -206,13 +211,14 @@ void testApp::updateServer(){
 		if( isMapping ) {
 			ofPoint p;
 			p = user.getJoint(JOINT_RIGHT_HAND).getWorldPosition();
+			p.y = -p.y;
 			cv::Mat pcv;
 			pcv = (cv::Mat1d(4, 1) << p.x, p.y, p.z, 1);
 			pcv = proMatrix * pcv;
 			pcv *= 1.0 / pcv.at<double>(2, 0);
 			
-			m.x = pcv.at<double>(0, 0);
-			m.y = pcv.at<double>(1, 0);
+			m.x = ofMap(pcv.at<double>(0, 0), 0, proWidth, 0, width);
+			m.y = ofMap(pcv.at<double>(1, 0), 0, proHeight, 0, height);
 			d.x = -d.x;
 		}
 		
