@@ -306,7 +306,11 @@ void testApp::draw(){
 	if(!openNIDevice.isDepthOn()) {
 		label = "Kinect not running";
 	} else {
-		label = ofToString(numUsers) + " users at " + ofToString(ofGetFrameRate(), 5) + " fps";
+		if( isMapping ) {
+			label = ofToString(numUsers) + " users at " + ofToString(ofGetFrameRate(), 5) + " fps" + "(secret mapping mode)";
+		} else {
+			label = ofToString(numUsers) + " users at " + ofToString(ofGetFrameRate(), 5) + " fps";
+		}
 	}
 	
 	ofPushMatrix();
