@@ -11,7 +11,7 @@ void testApp::setup(){
 	openNIDevice.addImageGenerator();
 	openNIDevice.addDepthGenerator();
 	openNIDevice.setRegister(true);
-	openNIDevice.setMirror(true);
+	openNIDevice.setMirror(false);
 	openNIDevice.addUserGenerator();
 	openNIDevice.setMaxNumUsers(10);
 	openNIDevice.start();
@@ -52,7 +52,18 @@ void testApp::setup(){
 	gui.add(inertiaRate.setup("Inertia Rate", 0.99, 0.8f, 1));
 	gui.add(blobSize.setup("Blob Size", 2, 1, 4));
 	gui.add(clearUsers.setup("Clear Users", false));
-//	gui.setSize(400, 240);
+	
+	cv::FileStorage cfs(ofToDataPath("calibration.yml"), cv::FileStorage::READ);
+	if( cfs.isOpened() ) {
+		cv::Mat proIntrinsic, proExtrinsic;
+		cfs["proIntrinsic"] >> proIntrinsic;
+		cfs["proExtrinsic"] >> proExtrinsic;
+		proMatrix = proIntrinsic * proExtrinsic;
+		
+		isMapping = true;
+	} else {
+		isMapping = false;
+	}
 }
 
 //--------------------------------------------------------------
@@ -113,20 +124,76 @@ void testApp::updateServer(){
 			continue;
 		}
 		
-		ofVec2f m;
+		ofVec2f m, d;
+		ofxOscMessage message;
+		
+		// left hand
+
+		// to client
 		m = user.getJoint(JOINT_LEFT_HAND).getProjectivePosition();
-		
-		ofVec2f d;
+		m.x = width - m.x;
 		d = (m - oldLeftM.at(i))*1.0;
-		
 		oldLeftM.at(i) = m;
+		
+		message.setAddress("/memoire/liquide/left");
+		message.addIntArg(i);
+		message.addFloatArg(m.x);
+		message.addFloatArg(m.y);
+		message.addFloatArg(d.x);
+		message.addFloatArg(d.y);
+		message.addIntArg(ofGetFrameNum());
+		oscSenderOf.sendMessage(message);
+		message.clear();
+		
+		// for Unity integration
+		float th = 5*5;
+		if(ofGetFrameNum() % 4 == 1 && d.lengthSquared() > th) {
+			message.setAddress("/niw/client/aggregator/floorcontact");
+			message.addStringArg("add");
+			message.addIntArg(ofGetFrameNum());
+			message.addFloatArg(ofMap(m.x, 0, width, 0, 6));
+			message.addFloatArg(ofMap(m.y, 0, height, 6, 0));
+			oscSenderUnity.sendMessage(message);
+		}
+		message.clear();
+		
+		if( isMapping ) {
+			ofPoint p;
+			p = user.getJoint(JOINT_LEFT_HAND).getWorldPosition();
+			cv::Mat pcv;
+			pcv = (cv::Mat1d(4, 1) << p.x, p.y, p.z, 1);
+			pcv = proMatrix * pcv;
+			pcv *= 1.0 / pcv.at<double>(2, 0);
+			
+			m.x = pcv.at<double>(0, 0);
+			m.y = pcv.at<double>(1, 0);
+			d.x = -d.x;
+		}
+		
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2), 5.0f * blobSize);
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.2), 10.0f * blobSize);
 		
-		ofxOscMessage message;
-		float th = 5*5;
-		if(ofGetFrameNum() % 4 == 1 && d.lengthSquared() > th) {
-			// for Unity integration
+		
+		// right hand
+		
+		// to client
+		m = user.getJoint(JOINT_RIGHT_HAND).getProjectivePosition();
+		m.x = width - m.x;
+		d = (m - oldRightM.at(i))*1.0;
+		oldRightM.at(i) = m;
+		
+		message.setAddress("/memoire/liquide/right");
+		message.addIntArg(i);
+		message.addFloatArg(m.x);
+		message.addFloatArg(m.y);
+		message.addFloatArg(d.x);
+		message.addFloatArg(d.y);
+		message.addIntArg(ofGetFrameNum());
+		oscSenderOf.sendMessage(message);
+		message.clear();
+		
+		// for Unity integration
+		if(ofGetFrameNum() % 4 == 3 && d.lengthSquared() > th) {
 			message.setAddress("/niw/client/aggregator/floorcontact");
 			message.addStringArg("add");
 			message.addIntArg(ofGetFrameNum());
@@ -136,49 +203,24 @@ void testApp::updateServer(){
 		}
 		message.clear();
 		
-		// to client
-		ofPoint p;
-		p = user.getJoint(JOINT_LEFT_HAND).getWorldPosition();
-		message.setAddress("/memoire/liquide/left");
-		message.addIntArg(i);
-		message.addFloatArg(p.x);
-		message.addFloatArg(p.y);
-		message.addFloatArg(d.x);
-		message.addFloatArg(d.y);
-		message.addIntArg(ofGetFrameNum());
-		oscSenderOf.sendMessage(message);
-		message.clear();
+		if( isMapping ) {
+			ofPoint p;
+			p = user.getJoint(JOINT_RIGHT_HAND).getWorldPosition();
+			cv::Mat pcv;
+			pcv = (cv::Mat1d(4, 1) << p.x, p.y, p.z, 1);
+			pcv = proMatrix * pcv;
+			pcv *= 1.0 / pcv.at<double>(2, 0);
+			
+			m.x = pcv.at<double>(0, 0);
+			m.y = pcv.at<double>(1, 0);
+			d.x = -d.x;
+		}
 		
-		m = user.getJoint(JOINT_RIGHT_HAND).getProjectivePosition();
-		
-		d = (m - oldRightM.at(i))*1.0;
-		
-		oldRightM.at(i) = m;
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1), 5.0f * blobSize);
 		fluid.addTemporalForce(m, d, ofFloatColor(0.05, 0.1, 0.1), 10.0f * blobSize);
 		
-		if(ofGetFrameNum() % 4 == 3 && d.lengthSquared() > th) {
-			// for Unity integration
-			message.setAddress("/niw/client/aggregator/floorcontact");
-			message.addStringArg("add");
-			message.addIntArg(ofGetFrameNum());
-			message.addFloatArg(ofMap(m.x, 0, width, 0, 6));
-			message.addFloatArg(ofMap(m.y, 0, height, 6, 0));
-			oscSenderUnity.sendMessage(message);
-		}
-		message.clear();
 		
-		// to client
-		p = user.getJoint(JOINT_RIGHT_HAND).getWorldPosition();
-		message.setAddress("/memoire/liquide/right");
-		message.addIntArg(i);
-		message.addFloatArg(p.x);
-		message.addFloatArg(p.y);
-		message.addFloatArg(d.x);
-		message.addFloatArg(d.y);
-		message.addIntArg(ofGetFrameNum());
-		oscSenderOf.sendMessage(message);
-		message.clear();
+		// delete inactive users
 		
 		if(d.length() == 0 && !user.isCalibrating() && numUsers == openNIDevice.getMaxNumUsers()) {
 			dieCounts.at(i)++;
@@ -215,7 +257,6 @@ void testApp::updateClient(){
 		ofxOscMessage m;
 		oscReceiverOf->getNextMessage(&m);
 		
-		// check for mouse moved message
 		if(m.getAddress() == "/memoire/liquide/left"){
 			ofVec2f p, d;
 			p.x = m.getArgAsFloat(1);
@@ -262,6 +303,13 @@ void testApp::draw(){
 		label = ofToString(numUsers) + " users at " + ofToString(ofGetFrameRate(), 5) + " fps";
 	}
 	
+	ofPushMatrix();
+	
+	if( !isMapping ) {
+		ofTranslate(width/2, height/2);
+		ofScale(-1, 1);
+		ofTranslate(-width/2, -height/2);
+	}
 	// debug
 	for (int i = 0; i < numUsers; i++){
 		
@@ -271,6 +319,8 @@ void testApp::draw(){
 		// draw the mask texture for this user
 		user.drawSkeleton();
 	}
+	
+	ofPopMatrix();
 	
 	ofSetColor(255);
 	gui.draw();

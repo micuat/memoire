@@ -59,4 +59,7 @@ public:
 	ofxPanel gui;
 	
 	vector<int> dieCounts;
+	
+	cv::Mat proMatrix;
+	bool isMapping;
 };
