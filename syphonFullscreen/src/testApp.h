@@ -15,7 +15,13 @@ public:
 	
 	void keyPressed(int key);
 	
+	void serverAnnounced(ofxSyphonServerDirectoryEventArgs &arg);
+	void serverUpdated(ofxSyphonServerDirectoryEventArgs &args);
+	void serverRetired(ofxSyphonServerDirectoryEventArgs &arg);
+	
 	ofxSyphonClient mClient;
+	ofxSyphonServerDirectory dir;
+	bool serverAvailable;
 };
 
 #endif
