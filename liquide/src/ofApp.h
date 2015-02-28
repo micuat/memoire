@@ -55,6 +55,7 @@ public:
 	ofxFloatSlider disappearRate;
 	ofxFloatSlider inertiaRate;
 	ofxFloatSlider blobSize;
+	ofxFloatSlider maskSize;
 	
 	ofxPanel gui;
 	
@@ -66,4 +67,6 @@ public:
 	float proWidth, proHeight;
 	
 	vector<ofVec2f> headPoints;
+	
+	ofVboMesh headMask;
 };

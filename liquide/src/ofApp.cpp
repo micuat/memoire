@@ -51,6 +51,7 @@ void testApp::setup(){
 	gui.add(disappearRate.setup("Disappear Rate", 0.95f, 0.9f, 1));
 	gui.add(inertiaRate.setup("Inertia Rate", 0.99, 0.8f, 1));
 	gui.add(blobSize.setup("Blob Size", 2, 1, 4));
+	gui.add(maskSize.setup("Mask Size", 1, 1, 4));
 	gui.add(clearUsers.setup("Clear Users", false));
 	
 	cv::FileStorage cfs(ofToDataPath("calibration.yml"), cv::FileStorage::READ);
@@ -68,6 +69,16 @@ void testApp::setup(){
 	} else {
 		isMapping = false;
 	}
+	
+	headMask.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+	headMask.addVertex(ofVec2f(0, 0));
+	headMask.addColor(ofFloatColor(0, 0, 0, 1));
+	int n = 16;
+	for( int i = 0; i < n + 1; i++ ) {
+		headMask.addVertex(ofVec2f(cos(M_PI * ((float) i * 2.f / n)), sin(M_PI * ((float) i * 2.f / n))) * 300);
+		headMask.addColor(ofFloatColor(0, 0, 0, 0));
+	}
+	
 }
 
 //--------------------------------------------------------------
@@ -318,9 +329,14 @@ void testApp::draw(){
 	
 	if(isMapping) {
 		ofPushStyle();
-		ofSetColor(0);
+		ofEnableAlphaBlending();
+		ofSetColor(200);
 		for(int i = 0; i < headPoints.size(); i++) {
-			ofCircle(headPoints.at(i), 100);
+			ofPushMatrix();
+			ofScale(maskSize, maskSize);
+			ofTranslate(headPoints.at(i));
+			headMask.draw();
+			ofPopMatrix();
 		}
 		ofPopStyle();
 	}
