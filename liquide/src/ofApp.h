@@ -51,6 +51,7 @@ public:
 	ofPtr<ofxOscReceiver> oscReceiverOf;
 	
 	ofxToggle clearUsers;
+	ofxToggle recording;
 	ofxLabel label;
 	ofxFloatSlider disappearRate;
 	ofxFloatSlider inertiaRate;

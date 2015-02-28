@@ -5,6 +5,7 @@ void testApp::setup(){
     ofEnableAlphaBlending();
     ofSetCircleResolution(100);
 	
+//	ofLogToFile(ofToDataPath(ofGetTimestampString() + "_log.txt"), true);
 	ofSetLogLevel(OF_LOG_VERBOSE);
 	
 	openNIDevice.setup();
@@ -53,6 +54,7 @@ void testApp::setup(){
 	gui.add(blobSize.setup("Blob Size", 2, 1, 4));
 	gui.add(maskSize.setup("Mask Size", 1, 1, 4));
 	gui.add(clearUsers.setup("Clear Users", false));
+	gui.add(recording.setup("Recording", false));
 	
 	cv::FileStorage cfs(ofToDataPath("calibration.yml"), cv::FileStorage::READ);
 	if( cfs.isOpened() ) {
@@ -101,6 +103,16 @@ void testApp::update(){
 //--------------------------------------------------------------
 void testApp::updateServer(){
 	openNIDevice.update();
+	
+	if(recording) {
+		if(!openNIDevice.isRecording()) {
+			openNIDevice.startRecording(ofToDataPath(ofGetTimestampString() + "_log.oni"));
+		}
+	} else {
+		if(openNIDevice.isRecording()) {
+			openNIDevice.stopRecording();
+		}
+	}
 	
 	if(clearUsers) {
 		openNIDevice.waitForThread(true);
