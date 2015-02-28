@@ -8,10 +8,10 @@
 #include "ofxSyphon.h"
 #include "ofxGui.h"
 
-#define HOST_UNITY "localhost"
+#define HOST_UNITY "169.254.92.236"
 #define PORT_UNITY 14923
 
-#define HOST_OF "localhost"
+#define HOST_OF "169.254.92.236"
 #define PORT_OF 14933
 
 class testApp : public ofBaseApp{
@@ -64,4 +64,6 @@ public:
 	bool isMapping;
 	
 	float proWidth, proHeight;
+	
+	vector<ofVec2f> headPoints;
 };

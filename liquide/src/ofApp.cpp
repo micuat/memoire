@@ -113,6 +113,8 @@ void testApp::updateServer(){
 	oldRightM.resize(numUsers);
 	dieCounts.resize(numUsers, 0);
 	
+	headPoints.clear();
+	
 	// iterate through users
 	for (int i = 0; i < numUsers; i++){
 		
@@ -132,7 +134,22 @@ void testApp::updateServer(){
 		ofxOscMessage message;
 		
 		// left hand
-
+		
+		if( isMapping ) {
+			ofPoint p;
+			p = user.getJoint(JOINT_HEAD).getWorldPosition();
+			p.y = -p.y;
+			cv::Mat pcv;
+			pcv = (cv::Mat1d(4, 1) << p.x, p.y, p.z, 1);
+			pcv = proMatrix * pcv;
+			pcv *= 1.0 / pcv.at<double>(2, 0);
+			
+			m.x = ofMap(pcv.at<double>(0, 0), 0, proWidth, 0, width);
+			m.y = ofMap(pcv.at<double>(1, 0), 0, proHeight, 0, height);
+			
+			headPoints.push_back(m);
+		}
+		
 		// to client
 		m = user.getJoint(JOINT_LEFT_HAND).getProjectivePosition();
 		m.x = width - m.x;
@@ -299,6 +316,14 @@ void testApp::draw(){
 	
     fluid.draw();
 	
+	if(isMapping) {
+		ofPushStyle();
+		ofSetColor(0);
+		for(int i = 0; i < headPoints.size(); i++) {
+			ofCircle(headPoints.at(i), 100);
+		}
+		ofPopStyle();
+	}
 	syphonServer.publishScreen();
 	
 	int numUsers = openNIDevice.getNumTrackedUsers();
