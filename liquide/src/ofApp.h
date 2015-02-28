@@ -8,10 +8,10 @@
 #include "ofxSyphon.h"
 #include "ofxGui.h"
 
-#define HOST_UNITY "169.254.92.236"
+#define HOST_UNITY "192.168.1.3"
 #define PORT_UNITY 14923
 
-#define HOST_OF "169.254.92.236"
+#define HOST_OF "192.168.1.3"
 #define PORT_OF 14933
 
 class testApp : public ofBaseApp{
@@ -52,6 +52,7 @@ public:
 	
 	ofxToggle clearUsers;
 	ofxToggle recording;
+	ofxToggle logging;
 	ofxLabel label;
 	ofxFloatSlider disappearRate;
 	ofxFloatSlider inertiaRate;
@@ -70,4 +71,5 @@ public:
 	vector<ofVec2f> headPoints;
 	
 	ofVboMesh headMask;
+	bool bLogging;
 };

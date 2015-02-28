@@ -5,7 +5,6 @@ void testApp::setup(){
     ofEnableAlphaBlending();
     ofSetCircleResolution(100);
 	
-//	ofLogToFile(ofToDataPath(ofGetTimestampString() + "_log.txt"), true);
 	ofSetLogLevel(OF_LOG_VERBOSE);
 	
 	openNIDevice.setup();
@@ -55,6 +54,8 @@ void testApp::setup(){
 	gui.add(maskSize.setup("Mask Size", 1, 1, 4));
 	gui.add(clearUsers.setup("Clear Users", false));
 	gui.add(recording.setup("Recording", false));
+	gui.add(logging.setup("Logging", false));
+	bLogging = false;
 	
 	cv::FileStorage cfs(ofToDataPath("calibration.yml"), cv::FileStorage::READ);
 	if( cfs.isOpened() ) {
@@ -85,6 +86,14 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::update(){
+	if(logging && !bLogging) {
+		ofLogToFile(ofToDataPath(ofGetTimestampString() + "_log.txt"), true);
+		bLogging = true;
+	}
+	if(!logging && bLogging) {
+		ofLogToConsole();
+		bLogging = false;
+	}
 	fluid.dissipation = disappearRate;
 	fluid.velocityDissipation = inertiaRate;
 	
@@ -144,6 +153,16 @@ void testApp::updateServer(){
 		// get a reference to this user
 		ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
 		user.setForceResetTimeout(200);
+		
+		stringstream ss;
+		ss.clear();
+		ss << ofGetTimestampString() << " " << i;
+		for(int j = 0; j < JOINT_COUNT; j++) {
+			ofPoint p;
+			p = user.getJoint((Joint)j).getWorldPosition();
+			ss << " " << p;
+		}
+		ofLogVerbose() << ss.str();
 		
 		if(user.isCalibrating()) {
 			continue;
