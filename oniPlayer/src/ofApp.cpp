@@ -19,6 +19,8 @@ void ofApp::setup() {
 	dir.allowExt("oni");
 	dir.listDir();
 	fileIndex = 0;
+	
+	cam.setFarClip(100000);
 }
 
 //--------------------------------------------------------------
@@ -42,8 +44,7 @@ void ofApp::draw(){
 	
 	if(openNIPlayer && openNIPlayer->isPlaying()) {
 		cam.begin();
-		int w = 640;
-		int h = 480;
+		
 		ofMesh mesh;
 		mesh = ofxPCL::organizedFastMesh(openNIPlayer->getImagePixels(), openNIPlayer->getDepthRawPixels(), 2, 1);
 		ofPushMatrix();
@@ -53,13 +54,34 @@ void ofApp::draw(){
 		ofEnableDepthTest();
 		mesh.drawWireframe();
 		ofDisableDepthTest();
+
+		ofScale(1, -1, 1);
+		int numUsers = openNIPlayer->getNumTrackedUsers();
+
+		for (int i = 0; i < numUsers; i++){
+			
+			// get a reference to this user
+			ofxOpenNIUser & user = openNIPlayer->getTrackedUser(i);
+			
+			for(int j = 0; j < user.getNumJoints(); j++){
+				ofxOpenNIJoint joint = user.getJoint((Joint)j);
+				ofPushStyle();
+				
+				ofSetColor(ofColor::darkBlue, 100);
+				ofSetLineWidth(5);
+				if(joint.isParent()){
+					ofLine(joint.getWorldPosition(), joint.getParent().getWorldPosition());
+				}
+				
+				ofPopStyle();
+			}
+		}
 		ofPopMatrix();
-		ofLogVerbose()<<mesh.getNumVertices();
+		
 		cam.end();
+		
+
 	}
-	ofSetColor(0, 255, 0);
-	string msg = " MILLIS: " + ofToString(ofGetElapsedTimeMillis()) + " FPS: " + ofToString(ofGetFrameRate());
-	verdana.drawString(msg, 20, 2 * 480 - 20);
 }
 
 //--------------------------------------------------------------
@@ -74,7 +96,7 @@ void ofApp::gestureEvent(ofxOpenNIGestureEvent & event){
 
 //--------------------------------------------------------------
 void ofApp::exit(){
-    if(openNIPlayer) openNIPlayer->stop();
+    //if(openNIPlayer) openNIPlayer->stop();
 }
 
 //--------------------------------------------------------------
@@ -87,7 +109,7 @@ void ofApp::keyPressed(int key){
 			playOpenNI();
 			break;
 		case OF_KEY_LEFT:
-			fileIndex = (fileIndex-1)%dir.numFiles();
+			fileIndex = (fileIndex-1+dir.numFiles())%dir.numFiles();
 			playOpenNI();
 			break;
         case 'p':
@@ -107,9 +129,6 @@ void ofApp::keyPressed(int key){
         case '.':
             if(openNIPlayer) openNIPlayer->nextFrame();
             break;
-        case 'x':
-            if(openNIPlayer) openNIPlayer->stop();
-            break;
     }
 
 }
@@ -119,12 +138,17 @@ void ofApp::playOpenNI(){
 	if(openNIPlayer) {
 		openNIPlayer->waitForThread(true);
 		openNIPlayer->setPaused(true);
+		openNIPlayer->removeUserGenerator();
 		openNIPlayer->stop();
 	}
 	openNIPlayer = ofPtr<ofxOpenNI>(new ofxOpenNI);
-	openNIPlayer->setup();
+	openNIPlayer->setupFromONI(dir.getPath(fileIndex));
+	openNIPlayer->addImageGenerator();
+	openNIPlayer->addDepthGenerator();
+	openNIPlayer->setRegister(true);
+	openNIPlayer->addUserGenerator();
+	openNIPlayer->setMaxNumUsers(10);
 	openNIPlayer->start();
-	openNIPlayer->startPlayer(dir.getPath(fileIndex));
 	openNIPlayer->setUseDepthRawPixels(true);
 }
 
