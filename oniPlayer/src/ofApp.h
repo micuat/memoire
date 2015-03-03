@@ -3,6 +3,7 @@
 
 #include "ofxOpenNI.h"
 #include "ofMain.h"
+#include "ofxPCL.h"
 
 class ofApp : public ofBaseApp{
 

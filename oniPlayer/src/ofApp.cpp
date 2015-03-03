@@ -24,6 +24,7 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update(){
     if(openNIPlayer) openNIPlayer->update();
+	ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
 
 //--------------------------------------------------------------
@@ -44,32 +45,16 @@ void ofApp::draw(){
 		int w = 640;
 		int h = 480;
 		ofMesh mesh;
-		mesh.setMode(OF_PRIMITIVE_POINTS);
-		int step = 2;
-		for(int y = 0; y < h; y += step) {
-			for(int x = 0; x < w; x += step) {
-				ofVec3f v;
-				
-				const ofShortPixels& pix = openNIPlayer->getDepthRawPixels();
-				const unsigned short *ptr = pix.getPixels();
-				unsigned short z = ptr[pix.getWidth() * y + x];
-				v = openNIPlayer->projectiveToWorld(ofVec3f(x, y, z));
-				if(v.z > 0 && v.z < 4500) {
-					mesh.addColor(openNIPlayer->getImagePixels().getColor(x, y));
-					mesh.addVertex(v);
-				}
-			}
-		}
-		glPointSize(2);
+		mesh = ofxPCL::organizedFastMesh(openNIPlayer->getImagePixels(), openNIPlayer->getDepthRawPixels(), 2, 1);
 		ofPushMatrix();
 		// the projected points are 'upside down' and 'backwards'
-		ofScale(1, 1, -1);
+		ofScale(1, -1, -1);
 		ofTranslate(0, 0, -2000); // center the points a bit
 		ofEnableDepthTest();
-		mesh.drawVertices();
+		mesh.drawWireframe();
 		ofDisableDepthTest();
 		ofPopMatrix();
-
+		ofLogVerbose()<<mesh.getNumVertices();
 		cam.end();
 	}
 	ofSetColor(0, 255, 0);

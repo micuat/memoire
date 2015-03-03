@@ -18,6 +18,8 @@
 		5C1CAB2F1AA6138300241EC8 /* SyphonNameboundClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C1CAB2E1AA6138300241EC8 /* SyphonNameboundClient.m */; };
 		5C1CAB301AA6140500241EC8 /* Syphon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C1CAB2C1AA6135B00241EC8 /* Syphon.framework */; };
 		5C1CAB311AA6140500241EC8 /* Syphon.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C1CAB2C1AA6135B00241EC8 /* Syphon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5C1CAB3A1AA6159800241EC8 /* Utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1CAB361AA6159800241EC8 /* Utility.cpp */; };
+		5C1CAB3B1AA6159800241EC8 /* ofxPCL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1CAB381AA6159800241EC8 /* ofxPCL.cpp */; };
 		5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88333E71C9457E441C33474 /* ofxButton.cpp */; };
 		837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15F2C6477A769C03A56D1401 /* ofxSlider.cpp */; };
 		856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9604B925D32EE39065747725 /* ofxBaseGui.cpp */; };
@@ -153,6 +155,12 @@
 		59A001845FE1518D9691C207 /* XnVDepthGenerator.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = XnVDepthGenerator.h; path = ../../../addons/ofxOpenNI/libs/nite/include/XnVDepthGenerator.h; sourceTree = SOURCE_ROOT; };
 		5C1CAB2C1AA6135B00241EC8 /* Syphon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Syphon.framework; sourceTree = "<group>"; };
 		5C1CAB2E1AA6138300241EC8 /* SyphonNameboundClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SyphonNameboundClient.m; path = ../../../addons/ofxSyphon/libs/Syphon/src/SyphonNameboundClient.m; sourceTree = "<group>"; };
+		5C1CAB341AA6159800241EC8 /* Tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tree.h; sourceTree = "<group>"; };
+		5C1CAB351AA6159800241EC8 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		5C1CAB361AA6159800241EC8 /* Utility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utility.cpp; sourceTree = "<group>"; };
+		5C1CAB371AA6159800241EC8 /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = "<group>"; };
+		5C1CAB381AA6159800241EC8 /* ofxPCL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxPCL.cpp; sourceTree = "<group>"; };
+		5C1CAB391AA6159800241EC8 /* ofxPCL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxPCL.h; sourceTree = "<group>"; };
 		5D133066DED066313AC8798E /* XnVSessionGenerator.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = XnVSessionGenerator.h; path = ../../../addons/ofxOpenNI/libs/nite/include/XnVSessionGenerator.h; sourceTree = SOURCE_ROOT; };
 		5E5EAD88DF0323D1C6109408 /* ofxOldTv.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxOldTv.h; path = ../../../addons/ofxFX/src/filters/ofxOldTv.h; sourceTree = SOURCE_ROOT; };
 		5EB2086D1E2D71274EC0DBEC /* XnTypes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = XnTypes.h; path = ../../../addons/ofxOpenNI/libs/openni/include/XnTypes.h; sourceTree = SOURCE_ROOT; };
@@ -633,6 +641,28 @@
 			path = osx;
 			sourceTree = "<group>";
 		};
+		5C1CAB321AA6158A00241EC8 /* ofxPCL */ = {
+			isa = PBXGroup;
+			children = (
+				5C1CAB331AA6159800241EC8 /* src */,
+			);
+			name = ofxPCL;
+			sourceTree = "<group>";
+		};
+		5C1CAB331AA6159800241EC8 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				5C1CAB341AA6159800241EC8 /* Tree.h */,
+				5C1CAB351AA6159800241EC8 /* Types.h */,
+				5C1CAB361AA6159800241EC8 /* Utility.cpp */,
+				5C1CAB371AA6159800241EC8 /* Utility.h */,
+				5C1CAB381AA6159800241EC8 /* ofxPCL.cpp */,
+				5C1CAB391AA6159800241EC8 /* ofxPCL.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxPCL/src;
+			sourceTree = "<group>";
+		};
 		65F3085962B3A8825746C3C2 /* Syphon */ = {
 			isa = PBXGroup;
 			children = (
@@ -711,6 +741,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				5C1CAB321AA6158A00241EC8 /* ofxPCL */,
 				480A780D8D0308AE4A368801 /* ofxGui */,
 				CABF1A23B637491112B10A00 /* ofxFX */,
 				AC589A74CE1B327ED3EED72A /* ofxFluid */,
@@ -963,7 +994,9 @@
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
+				5C1CAB3B1AA6159800241EC8 /* ofxPCL.cpp in Sources */,
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
+				5C1CAB3A1AA6159800241EC8 /* Utility.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
 				483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */,
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
@@ -1195,11 +1228,59 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = NONE;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../../addons/ofxGui/libs,
+					../../../addons/ofxGui/src,
+					../../../addons/ofxFX/libs,
+					../../../addons/ofxFX/src,
+					../../../addons/ofxFX/src/composers,
+					../../../addons/ofxFX/src/filters,
+					../../../addons/ofxFX/src/generative,
+					../../../addons/ofxFX/src/operations,
+					../../../addons/ofxFluid/libs,
+					../../../addons/ofxFluid/src,
+					../../../addons/ofxOpenNI/libs,
+					../../../addons/ofxOpenNI/libs/libusb,
+					../../../addons/ofxOpenNI/libs/libusb/include,
+					../../../addons/ofxOpenNI/libs/nite,
+					../../../addons/ofxOpenNI/libs/nite/include,
+					../../../addons/ofxOpenNI/libs/openni,
+					../../../addons/ofxOpenNI/libs/openni/include,
+					../../../addons/ofxOpenNI/libs/openni/include/ARC,
+					"../../../addons/ofxOpenNI/libs/openni/include/Android-Arm",
+					"../../../addons/ofxOpenNI/libs/openni/include/Linux-Arm",
+					"../../../addons/ofxOpenNI/libs/openni/include/Linux-x86",
+					../../../addons/ofxOpenNI/libs/openni/include/MacOSX,
+					../../../addons/ofxOpenNI/libs/openni/include/Win32,
+					../../../addons/ofxOpenNI/libs/osx,
+					../../../addons/ofxOpenNI/src,
+					../../../addons/ofxSyphon/libs,
+					../../../addons/ofxSyphon/libs/Syphon,
+					../../../addons/ofxSyphon/libs/Syphon/lib,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Headers,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Resources,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Resources/English.lproj,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/A,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/A/Headers,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/A/Resources,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/A/Resources/English.lproj,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/Current,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/Current/Headers,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/Current/Resources,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/Current/Resources/English.lproj,
+					../../../addons/ofxSyphon/libs/Syphon/src,
+					../../../addons/ofxSyphon/src,
+					"$(OFXPCL_HEADER_SEARCH_PATHS)",
+				);
 				ICON = "$(ICON_NAME_DEBUG)";
 				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks $(OFXPCL_LD_RUNPATH_SEARCH_PATHS)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -1264,6 +1345,24 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_51)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_52)",
 				);
+				OTHER_LDFLAGS = (
+					"$(OF_CORE_LIBS)",
+					../../../addons/ofxOpenNI/libs/osx/libnimCodecs.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libnimMockNodes.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libnimRecorder.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libOpenNI.dylib,
+					"../../../addons/ofxOpenNI/libs/osx/libusb-1.0.0.dylib",
+					../../../addons/ofxOpenNI/libs/osx/libXnCore.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnDDK.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnDeviceFile.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnDeviceSensorV2KM.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnFormats.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnVCNITE_1_5_2.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnVFeatures_1_5_2.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnVHandGenerator_1_5_2.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnVNite_1_5_2.dylib,
+					"$(OFXPCL_OTHER_LDFLAGS)",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)Debug";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1282,11 +1381,59 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../libs/glut/lib/osx\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = NONE;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../../addons/ofxGui/libs,
+					../../../addons/ofxGui/src,
+					../../../addons/ofxFX/libs,
+					../../../addons/ofxFX/src,
+					../../../addons/ofxFX/src/composers,
+					../../../addons/ofxFX/src/filters,
+					../../../addons/ofxFX/src/generative,
+					../../../addons/ofxFX/src/operations,
+					../../../addons/ofxFluid/libs,
+					../../../addons/ofxFluid/src,
+					../../../addons/ofxOpenNI/libs,
+					../../../addons/ofxOpenNI/libs/libusb,
+					../../../addons/ofxOpenNI/libs/libusb/include,
+					../../../addons/ofxOpenNI/libs/nite,
+					../../../addons/ofxOpenNI/libs/nite/include,
+					../../../addons/ofxOpenNI/libs/openni,
+					../../../addons/ofxOpenNI/libs/openni/include,
+					../../../addons/ofxOpenNI/libs/openni/include/ARC,
+					"../../../addons/ofxOpenNI/libs/openni/include/Android-Arm",
+					"../../../addons/ofxOpenNI/libs/openni/include/Linux-Arm",
+					"../../../addons/ofxOpenNI/libs/openni/include/Linux-x86",
+					../../../addons/ofxOpenNI/libs/openni/include/MacOSX,
+					../../../addons/ofxOpenNI/libs/openni/include/Win32,
+					../../../addons/ofxOpenNI/libs/osx,
+					../../../addons/ofxOpenNI/src,
+					../../../addons/ofxSyphon/libs,
+					../../../addons/ofxSyphon/libs/Syphon,
+					../../../addons/ofxSyphon/libs/Syphon/lib,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Headers,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Resources,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Resources/English.lproj,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/A,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/A/Headers,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/A/Resources,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/A/Resources/English.lproj,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/Current,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/Current/Headers,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/Current/Resources,
+					../../../addons/ofxSyphon/libs/Syphon/lib/osx/Syphon.framework/Versions/Current/Resources/English.lproj,
+					../../../addons/ofxSyphon/libs/Syphon/src,
+					../../../addons/ofxSyphon/src,
+					"$(OFXPCL_HEADER_SEARCH_PATHS)",
+				);
 				ICON = "$(ICON_NAME_RELEASE)";
 				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks $(OFXPCL_LD_RUNPATH_SEARCH_PATHS)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -1350,6 +1497,24 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_49)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_50)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_51)",
+				);
+				OTHER_LDFLAGS = (
+					"$(OF_CORE_LIBS)",
+					../../../addons/ofxOpenNI/libs/osx/libnimCodecs.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libnimMockNodes.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libnimRecorder.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libOpenNI.dylib,
+					"../../../addons/ofxOpenNI/libs/osx/libusb-1.0.0.dylib",
+					../../../addons/ofxOpenNI/libs/osx/libXnCore.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnDDK.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnDeviceFile.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnDeviceSensorV2KM.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnFormats.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnVCNITE_1_5_2.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnVFeatures_1_5_2.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnVHandGenerator_1_5_2.dylib,
+					../../../addons/ofxOpenNI/libs/osx/libXnVNite_1_5_2.dylib,
+					"$(OFXPCL_OTHER_LDFLAGS)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
